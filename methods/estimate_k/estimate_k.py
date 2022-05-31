@@ -7,12 +7,12 @@ from sklearn.metrics import adjusted_rand_score as ari_score
 import numpy as np
 from sklearn.cluster import KMeans
 import torch
-from project_utils.cluster_utils import cluster_acc
+from utils.cluster_utils import cluster_acc
 
 from methods.clustering.feature_vector_dataset import FeatureVectorDataset
 from data.get_datasets import get_datasets, get_class_splits
 
-from config import feature_extract_dir
+from utils.config import feature_extract_dir
 from tqdm import tqdm
 
 from scipy.optimize import minimize_scalar

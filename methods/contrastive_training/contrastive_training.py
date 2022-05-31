@@ -1,15 +1,14 @@
 import argparse
-import os
 
 from torch.utils.data import DataLoader
 import numpy as np
 from sklearn.cluster import KMeans
 import torch
 from torch.optim import SGD, lr_scheduler
-from project_utils.cluster_utils import mixed_eval, AverageMeter
+from utils.cluster_utils import AverageMeter
 from models import vision_transformer as vits
 
-from project_utils.general_utils import init_experiment, get_mean_lr, str2bool, get_dino_head_weights
+from utils.general_utils import init_experiment, get_mean_lr, str2bool
 
 from data.augmentations import get_transform
 from data.get_datasets import get_datasets, get_class_splits
@@ -18,8 +17,8 @@ from tqdm import tqdm
 
 from torch.nn import functional as F
 
-from project_utils.cluster_and_log_utils import log_accs_from_preds
-from config import exp_root, dino_pretrain_path
+from utils.cluster_and_log_utils import log_accs_from_preds
+from utils.config import exp_root, dino_pretrain_path
 
 # TODO: Debug
 import warnings

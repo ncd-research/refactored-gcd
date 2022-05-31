@@ -18,7 +18,7 @@ from copy import deepcopy
 import pickle
 import os
 
-from config import osr_split_dir
+from utils.config import osr_split_dir
 
 sub_sample_class_funcs = {
     'cifar10': subsample_dataset_cifar,

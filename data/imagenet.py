@@ -5,7 +5,7 @@ import os
 
 from copy import deepcopy
 from data.data_utils import subsample_instances
-from config import imagenet_root
+from utils.config import imagenet_root
 
 
 class ImageNetBase(torchvision.datasets.ImageFolder):

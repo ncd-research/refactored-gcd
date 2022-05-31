@@ -1,8 +1,5 @@
 import torch
 from torch.utils.data import DataLoader
-import timm
-from torchvision import transforms
-import torchvision
 
 import argparse
 import os
@@ -17,10 +14,10 @@ from data.data_utils import MergedDataset
 from data.cub import CustomCub2011, cub_root
 from data.fgvc_aircraft import FGVCAircraft, aircraft_root
 
-from project_utils.general_utils import strip_state_dict, str2bool
+from utils.general_utils import str2bool
 from copy import deepcopy
 
-from config import feature_extract_dir, dino_pretrain_path
+from utils.config import feature_extract_dir, dino_pretrain_path
 
 def extract_features_dino(model, loader, save_dir):
 

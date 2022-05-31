@@ -3,18 +3,17 @@ import os
 
 from torch.utils.data import DataLoader
 import numpy as np
-from sklearn.cluster import KMeans
 import torch
-from project_utils.cluster_utils import str2bool
-from project_utils.general_utils import seed_torch
-from project_utils.cluster_and_log_utils import log_accs_from_preds
+from utils.cluster_utils import str2bool
+from utils.general_utils import seed_torch
+from utils.cluster_and_log_utils import log_accs_from_preds
 
 from methods.clustering.feature_vector_dataset import FeatureVectorDataset
 from data.get_datasets import get_datasets, get_class_splits
 from methods.clustering.faster_mix_k_means_pytorch import K_Means as SemiSupKMeans
 
 from tqdm import tqdm
-from config import feature_extract_dir
+from utils.config import feature_extract_dir
 
 # TODO: Debug
 import warnings
