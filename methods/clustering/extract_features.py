@@ -74,7 +74,7 @@ if __name__ == "__main__":
                         default=None)
     parser.add_argument('--use_best_model', type=str2bool, default=True)
     parser.add_argument('--model_name', type=str, default='vit_dino', help='Format is {model_name}_{pretrain}')
-    parser.add_argument('--dataset', type=str, default='aircraft', help='options: cifar10, cifar100, scars')
+    parser.add_argument('--dataset', type=str, default='aircraft')
 
     # ----------------------
     # INIT

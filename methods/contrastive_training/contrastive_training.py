@@ -283,9 +283,7 @@ def train(projection_head, model, train_loader, test_loader, unlabelled_train_lo
             best_test_acc_lab = old_acc_test
 
 
-def test_kmeans(model, test_loader,
-                epoch, save_name,
-                args):
+def test_kmeans(model, test_loader, epoch, save_name, args):
     model.eval()
 
     all_feats = []
@@ -328,16 +326,14 @@ def test_kmeans(model, test_loader,
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(
-        description='cluster',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(description='cluster', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--batch_size', default=128, type=int)
     parser.add_argument('--num_workers', default=16, type=int)
     parser.add_argument('--eval_funcs', nargs='+', help='Which eval functions to use', default=['v1', 'v2'])
 
     parser.add_argument('--warmup_model_dir', type=str, default=None)
     parser.add_argument('--model_name', type=str, default='vit_dino', help='Format is {model_name}_{pretrain}')
-    parser.add_argument('--dataset_name', type=str, default='scars', help='options: cifar10, cifar100, scars')
+    parser.add_argument('--dataset_name', type=str, default='scars')
     parser.add_argument('--prop_train_labels', type=float, default=0.5)
     parser.add_argument('--use_ssb_splits', type=str2bool, default=False)
 
