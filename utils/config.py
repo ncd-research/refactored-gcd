@@ -8,6 +8,11 @@ aircraft_root = 'Not_implemented_yet'
 herbarium_dataroot = 'Not_implemented_yet'
 imagenet_root = 'Not_implemented_yet'
 
+""" in stanford_cars.py file
+car_root = "/home/miil/Datasets/GCD/stanford_car/cars_{}/"
+meta_default_path = "/home/miil/Datasets/GCD/stanford_car/devkit/cars_{}.mat"
+"""
+
 # OSR Split dir
 osr_split_dir = '/data01/yuho_hdd/refactored_gcd/data/ssb_splits'
 
