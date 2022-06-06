@@ -4,6 +4,7 @@ import sklearn.metrics
 import torch
 import torch.nn as nn
 import matplotlib
+
 matplotlib.use('agg')
 from scipy.optimize import linear_sum_assignment as linear_assignment
 import random
@@ -16,11 +17,11 @@ from sklearn.metrics import adjusted_rand_score as ari_score
 from sklearn import metrics
 import time
 
+
 # -------------------------------
 # Evaluation Criteria
 # -------------------------------
 def evaluate_clustering(y_true, y_pred):
-
     start = time.time()
     print('Computing metrics...')
     if len(set(y_pred)) < 1000:
@@ -69,11 +70,11 @@ def purity_score(y_true, y_pred):
     # return purity
     return np.sum(np.amax(contingency_matrix, axis=0)) / np.sum(contingency_matrix)
 
+
 # -------------------------------
 # Mixed Eval Function
 # -------------------------------
 def mixed_eval(targets, preds, mask):
-
     """
     Evaluate clustering metrics on two subsets of data, as defined by the mask 'mask'
     (Mask usually corresponding to `Old' and `New' classes in GCD setting)
@@ -117,6 +118,7 @@ def mixed_eval(targets, preds, mask):
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
+
     def __init__(self):
         self.reset()
 
@@ -136,15 +138,19 @@ class AverageMeter(object):
 class Identity(nn.Module):
     def __init__(self):
         super(Identity, self).__init__()
+
     def forward(self, x):
         return x
 
 
 class BCE(nn.Module):
-    eps = 1e-7 # Avoid calculating log(0). Use the small value of float16.
+    eps = 1e-7  # Avoid calculating log(0). Use the small value of float16.
+
     def forward(self, prob1, prob2, simi):
         # simi: 1->similar; -1->dissimilar; 0->unknown(ignore)
-        assert len(prob1)==len(prob2)==len(simi), 'Wrong input size:{0},{1},{2}'.format(str(len(prob1)),str(len(prob2)),str(len(simi)))
+        assert len(prob1) == len(prob2) == len(simi), 'Wrong input size:{0},{1},{2}'.format(str(len(prob1)),
+                                                                                            str(len(prob2)),
+                                                                                            str(len(simi)))
         P = prob1.mul_(prob2)
         P = P.sum(1)
         P.mul_(simi).add_(simi.eq(-1).type_as(P))
@@ -152,17 +158,15 @@ class BCE(nn.Module):
         return neglogP.mean()
 
 
-def PairEnum(x,mask=None):
-
+def PairEnum(x, mask=None):
     # Enumerate all pairs of feature in x
     assert x.ndimension() == 2, 'Input dimension must be 2'
     x1 = x.repeat(x.size(0), 1)
     x2 = x.repeat(1, x.size(0)).view(-1, x.size(1))
 
     if mask is not None:
-
         xmask = mask.view(-1, 1).repeat(1, x.size(1))
-        #dim 0: #sample, dim 1:#feature 
+        # dim 0: #sample, dim 1:#feature
         x1 = x1[xmask].view(-1, x.size(1))
         x2 = x2[xmask].view(-1, x.size(1))
 
@@ -192,7 +196,7 @@ def seed_torch(seed=1029):
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed) # if you are using multi-GPU.
+    torch.cuda.manual_seed_all(seed)  # if you are using multi-GPU.
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
 

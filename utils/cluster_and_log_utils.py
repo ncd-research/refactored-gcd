@@ -4,7 +4,6 @@ from typing import List
 
 
 def split_cluster_acc_v1(y_true, y_pred, mask):
-
     """
     Evaluate clustering metrics on two subsets of data, as defined by the mask 'mask'
     (Mask usually corresponding to `Old' and `New' classes in GCD setting)
@@ -78,9 +77,10 @@ EVAL_FUNCS = {
     'v2': split_cluster_acc_v2,
 }
 
-def log_accs_from_preds(y_true, y_pred, mask, eval_funcs: List[str], save_name: str, T: int=None, writer: SummaryWriter=None,
-                        print_output=False):
 
+def log_accs_from_preds(y_true, y_pred, mask, eval_funcs: List[str], save_name: str, T: int = None,
+                        writer: SummaryWriter = None,
+                        print_output=False):
     """
     Given a list of evaluation functions to use (e.g ['v1', 'v2']) evaluate and log ACC results
 

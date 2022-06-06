@@ -9,20 +9,20 @@ from tensorboard.backend.event_processing.event_accumulator import EventAccumula
 
 from datetime import datetime
 
+
 class AverageMeter(object):
     """Computes and stores the average and current value"""
+
     def __init__(self):
         self.reset()
 
     def reset(self):
-
         self.val = 0
         self.avg = 0
         self.sum = 0
         self.count = 0
 
     def update(self, val, n=1):
-
         self.val = val
         self.sum += val * n
         self.count += n
@@ -30,19 +30,17 @@ class AverageMeter(object):
 
 
 def seed_torch(seed=1029):
-
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed(seed)
-    torch.cuda.manual_seed_all(seed) # if you are using multi-GPU.
+    torch.cuda.manual_seed_all(seed)  # if you are using multi-GPU.
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.deterministic = True
 
 
 def strip_state_dict(state_dict, strip_key='module.'):
-
     """
     Strip 'module' from start of state_dict keys
     Useful if model has been trained as DataParallel model
@@ -57,7 +55,6 @@ def strip_state_dict(state_dict, strip_key='module.'):
 
 
 def get_dino_head_weights(pretrain_path):
-
     """
     :param pretrain_path: Path to full DINO pretrained checkpoint as in https://github.com/facebookresearch/dino
      'full_ckpt'
@@ -85,13 +82,12 @@ def get_dino_head_weights(pretrain_path):
     dummy_linear = torch.nn.utils.weight_norm(dummy_linear)
 
     for k, v in dummy_linear.state_dict().items():
-
         head_state_dict['last_layer.' + k] = v
 
     return head_state_dict
 
-def transform_moco_state_dict(obj, num_classes):
 
+def transform_moco_state_dict(obj, num_classes):
     """
     :param obj: Moco State Dict
     :param args: argsparse object with training classes
@@ -121,7 +117,6 @@ def transform_moco_state_dict(obj, num_classes):
 
 
 def init_experiment(args, runner_name=None, exp_id=None):
-
     args.cuda = torch.cuda.is_available()
 
     # Get filepath of calling script
@@ -212,7 +207,6 @@ class ClassificationPredSaver(object):
     def __init__(self, length, save_path=None):
 
         if save_path is not None:
-
             # Remove filetype from save_path
             save_path = save_path.split('.')[0]
             self.save_path = save_path
@@ -263,7 +257,6 @@ class ClassificationPredSaver(object):
         torch.save(self.all_preds, pred_path)
 
         if self.all_labels is not None:
-
             # Evaluate
             self.evaluate()
             torch.save(self.all_labels, self.save_path + '_labels.pth')
@@ -279,7 +272,6 @@ class ClassificationPredSaver(object):
 
 
 def get_acc_auroc_curves(logdir):
-
     """
     :param logdir: Path to logs: E.g '/work/sagar/open_set_recognition/methods/ARPL/log/(12.03.2021_|_32.570)/'
     :return:
@@ -291,7 +283,6 @@ def get_acc_auroc_curves(logdir):
     # Only gets scalars
     log_info = {}
     for tag in event_acc.Tags()['scalars']:
-
         log_info[tag] = np.array([[x.step, x.value] for x in event_acc.scalars._buckets[tag].items])
 
     return log_info

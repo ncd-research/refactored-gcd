@@ -20,10 +20,11 @@ from functools import partial
 
 # TODO: Debug
 import warnings
+
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-def test_kmeans(K, merge_test_loader, args=None, verbose=False):
 
+def test_kmeans(K, merge_test_loader, args=None, verbose=False):
     """
     In this case, the test loader needs to have the labelled and unlabelled subsets of the training data
     """
@@ -33,13 +34,12 @@ def test_kmeans(K, merge_test_loader, args=None, verbose=False):
 
     all_feats = []
     targets = np.array([])
-    mask_lab = np.array([])     # From all the data, which instances belong to the labelled set
-    mask_cls = np.array([])     # From all the data, which instances belong to seen classes
+    mask_lab = np.array([])  # From all the data, which instances belong to the labelled set
+    mask_cls = np.array([])  # From all the data, which instances belong to seen classes
 
     print('Collating features...')
     # First extract all features
     for batch_idx, (feats, label, _, mask_lab_) in enumerate(tqdm(merge_test_loader)):
-
         feats = feats.to(device)
 
         feats = torch.nn.functional.normalize(feats, dim=-1)
@@ -67,7 +67,6 @@ def test_kmeans(K, merge_test_loader, args=None, verbose=False):
     # -----------------------
     mask = mask_lab
 
-
     labelled_acc, labelled_nmi, labelled_ari = cluster_acc(targets.astype(int)[mask], preds.astype(int)[mask]), \
                                                nmi_score(targets[mask], preds[mask]), \
                                                ari_score(targets[mask], preds[mask])
@@ -91,7 +90,6 @@ def test_kmeans(K, merge_test_loader, args=None, verbose=False):
 
 
 def test_kmeans_for_scipy(K, merge_test_loader, args=None, verbose=False):
-
     """
     In this case, the test loader needs to have the labelled and unlabelled subsets of the training data
     """
@@ -100,13 +98,12 @@ def test_kmeans_for_scipy(K, merge_test_loader, args=None, verbose=False):
 
     all_feats = []
     targets = np.array([])
-    mask_lab = np.array([])     # From all the data, which instances belong to the labelled set
-    mask_cls = np.array([])     # From all the data, which instances belong to seen classes
+    mask_lab = np.array([])  # From all the data, which instances belong to the labelled set
+    mask_cls = np.array([])  # From all the data, which instances belong to seen classes
 
     print('Collating features...')
     # First extract all features
     for batch_idx, (feats, label, _, mask_lab_) in enumerate(tqdm(merge_test_loader)):
-
         feats = feats.to(device)
 
         feats = torch.nn.functional.normalize(feats, dim=-1)
@@ -134,7 +131,6 @@ def test_kmeans_for_scipy(K, merge_test_loader, args=None, verbose=False):
     # -----------------------
     mask = mask_lab
 
-
     labelled_acc, labelled_nmi, labelled_ari = cluster_acc(targets.astype(int)[mask], preds.astype(int)[mask]), \
                                                nmi_score(targets[mask], preds[mask]), \
                                                ari_score(targets[mask], preds[mask])
@@ -154,7 +150,6 @@ def test_kmeans_for_scipy(K, merge_test_loader, args=None, verbose=False):
 
 
 def binary_search(merge_test_loader, args):
-
     min_classes = args.num_labeled_classes
 
     # Iter 0
@@ -167,7 +162,8 @@ def binary_search(merge_test_loader, args):
     labelled_acc_small = test_kmeans(small_k, merge_test_loader, args)
     labelled_acc_middle = test_kmeans(middle_k, merge_test_loader, args)
 
-    print(f'Iter 0: BigK {big_k}, Acc {labelled_acc_big:.4f} | MiddleK {middle_k}, Acc {labelled_acc_middle:.4f} | SmallK {small_k}, Acc {labelled_acc_small:.4f} ')
+    print(
+        f'Iter 0: BigK {big_k}, Acc {labelled_acc_big:.4f} | MiddleK {middle_k}, Acc {labelled_acc_middle:.4f} | SmallK {small_k}, Acc {labelled_acc_small:.4f} ')
     all_accs = [labelled_acc_small, labelled_acc_middle, labelled_acc_big]
     best_acc_so_far = np.max(all_accs)
     best_acc_at_k = np.array([small_k, middle_k, big_k])[np.argmax(all_accs)]
@@ -195,7 +191,8 @@ def binary_search(merge_test_loader, args):
 
         labelled_acc_middle = test_kmeans(middle_k, merge_test_loader, args)
 
-        print(f'Iter {i}: BigK {big_k}, Acc {labelled_acc_big:.4f} | MiddleK {middle_k}, Acc {labelled_acc_middle:.4f} | SmallK {small_k}, Acc {labelled_acc_small:.4f} ')
+        print(
+            f'Iter {i}: BigK {big_k}, Acc {labelled_acc_big:.4f} | MiddleK {middle_k}, Acc {labelled_acc_middle:.4f} | SmallK {small_k}, Acc {labelled_acc_small:.4f} ')
         all_accs = [labelled_acc_small, labelled_acc_middle, labelled_acc_big]
         best_acc_so_far = np.max(all_accs)
         best_acc_at_k = np.array([small_k, middle_k, big_k])[np.argmax(all_accs)]
@@ -203,7 +200,6 @@ def binary_search(merge_test_loader, args):
 
 
 def scipy_optimise(merge_test_loader, args):
-
     small_k = args.num_labeled_classes
     big_k = args.max_classes
 
@@ -256,7 +252,8 @@ if __name__ == "__main__":
     print('Building datasets...')
     train_transform, test_transform = None, None
     train_dataset, test_dataset, unlabelled_train_examples_test, datasets = get_datasets(args.dataset_name,
-                                                                                         train_transform, test_transform, args)
+                                                                                         train_transform,
+                                                                                         test_transform, args)
 
     # Convert to feature vector dataset
     test_dataset = FeatureVectorDataset(base_dataset=test_dataset, feature_root=os.path.join(args.save_dir, 'test'))

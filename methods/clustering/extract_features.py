@@ -19,8 +19,8 @@ from copy import deepcopy
 
 from utils.config import feature_extract_dir, dino_pretrain_path
 
-def extract_features_dino(model, loader, save_dir):
 
+def extract_features_dino(model, loader, save_dir):
     model.to(device)
     model.eval()
 
@@ -30,11 +30,10 @@ def extract_features_dino(model, loader, save_dir):
             images, labels, idxs = batch[:3]
             images = images.to(device)
 
-            features = model(images)         # CLS_Token for ViT, Average pooled vector for R50
+            features = model(images)  # CLS_Token for ViT, Average pooled vector for R50
 
             # Save features
             for f, t, uq in zip(features, labels, idxs):
-
                 t = t.item()
                 uq = uq.item()
 
@@ -43,7 +42,6 @@ def extract_features_dino(model, loader, save_dir):
 
 
 def extract_features_timm(model, loader, save_dir):
-
     model.to(device)
     model.eval()
 
@@ -53,11 +51,10 @@ def extract_features_timm(model, loader, save_dir):
             images, labels, idxs = batch[:3]
             images = images.to(device)
 
-            features = model.forward_features(images)         # CLS_Token for ViT, Average pooled vector for R50
+            features = model.forward_features(images)  # CLS_Token for ViT, Average pooled vector for R50
 
             # Save features
             for f, t, uq in zip(features, labels, idxs):
-
                 t = t.item()
                 uq = uq.item()
 
@@ -68,8 +65,8 @@ def extract_features_timm(model, loader, save_dir):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-            description='cluster',
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        description='cluster',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--batch_size', default=128, type=int)
     parser.add_argument('--num_workers', default=8, type=int)
     parser.add_argument('--root_dir', type=str, default=feature_extract_dir)
@@ -161,7 +158,7 @@ if __name__ == "__main__":
         train_dataset = CarsDataset(train=True, transform=val_transform)
         test_dataset = CarsDataset(train=False, transform=val_transform)
         targets = list(set(train_dataset.target))
-        targets = [i - 1 for i in targets]          # SCars are labelled 1 - 197. Change to 0 - 196
+        targets = [i - 1 for i in targets]  # SCars are labelled 1 - 197. Change to 0 - 196
 
     elif args.dataset == 'herbarium_19':
 
@@ -169,7 +166,7 @@ if __name__ == "__main__":
                                            transform=val_transform)
 
         test_dataset = HerbariumDataset19(root=os.path.join(herbarium_dataroot, 'small-validation'),
-                                           transform=val_transform)
+                                          transform=val_transform)
 
         targets = list(set(train_dataset.targets))
 
@@ -193,7 +190,7 @@ if __name__ == "__main__":
         train_dataset = CustomCub2011(root=cub_root, transform=val_transform, train=True)
         test_dataset = CustomCub2011(root=cub_root, transform=val_transform, train=False)
         targets = list(set(train_dataset.data.target.values))
-        targets = [i - 1 for i in targets]          # SCars are labelled 1 - 200. Change to 0 - 199
+        targets = [i - 1 for i in targets]  # SCars are labelled 1 - 200. Change to 0 - 199
 
     elif args.dataset == 'aircraft':
 

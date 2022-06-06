@@ -7,17 +7,16 @@ from copy import deepcopy
 from data.data_utils import subsample_instances
 from utils.config import herbarium_dataroot
 
+
 class HerbariumDataset19(torchvision.datasets.ImageFolder):
 
     def __init__(self, *args, **kwargs):
-
         # Process metadata json for training images into a DataFrame
         super().__init__(*args, **kwargs)
 
         self.uq_idxs = np.array(range(len(self)))
 
     def __getitem__(self, idx):
-
         img, label = super().__getitem__(idx)
         uq_idx = self.uq_idxs[idx]
 
@@ -25,7 +24,6 @@ class HerbariumDataset19(torchvision.datasets.ImageFolder):
 
 
 def subsample_dataset(dataset, idxs):
-
     mask = np.zeros(len(dataset)).astype('bool')
     mask[idxs] = True
 
@@ -41,7 +39,6 @@ def subsample_dataset(dataset, idxs):
 
 
 def subsample_classes(dataset, include_classes=range(250)):
-
     cls_idxs = [x for x, l in enumerate(dataset.targets) if l in include_classes]
 
     target_xform_dict = {}
@@ -56,14 +53,12 @@ def subsample_classes(dataset, include_classes=range(250)):
 
 
 def get_train_val_indices(train_dataset, val_instances_per_class=5):
-
     train_classes = list(set(train_dataset.targets))
 
     # Get train/test indices
     train_idxs = []
     val_idxs = []
     for cls in train_classes:
-
         cls_idxs = np.where(np.array(train_dataset.targets) == cls)[0]
 
         # Have a balanced test set
@@ -77,13 +72,12 @@ def get_train_val_indices(train_dataset, val_instances_per_class=5):
 
 
 def get_herbarium_datasets(train_transform, test_transform, train_classes=range(500), prop_train_labels=0.8,
-                            seed=0, split_train_val=False):
-
+                           seed=0, split_train_val=False):
     np.random.seed(seed)
 
     # Init entire training set
     train_dataset = HerbariumDataset19(transform=train_transform,
-                                            root=os.path.join(herbarium_dataroot, 'small-train'))
+                                       root=os.path.join(herbarium_dataroot, 'small-train'))
 
     # Get labelled training set which has subsampled classes, then subsample some indices from that
     # TODO: Subsampling unlabelled set in uniform random fashion from training data, will contain many instances of dominant class
@@ -110,7 +104,7 @@ def get_herbarium_datasets(train_transform, test_transform, train_classes=range(
 
     # Get test dataset
     test_dataset = HerbariumDataset19(transform=test_transform,
-                                            root=os.path.join(herbarium_dataroot, 'small-validation'))
+                                      root=os.path.join(herbarium_dataroot, 'small-validation'))
 
     # Transform dict
     unlabelled_classes = list(set(train_dataset.targets) - set(train_classes))
@@ -134,10 +128,11 @@ def get_herbarium_datasets(train_transform, test_transform, train_classes=range(
 
     return all_datasets
 
+
 if __name__ == '__main__':
 
     np.random.seed(0)
-    train_classes = np.random.choice(range(683,), size=(int(683 / 2)), replace=False)
+    train_classes = np.random.choice(range(683, ), size=(int(683 / 2)), replace=False)
 
     x = get_herbarium_datasets(None, None, train_classes=train_classes,
                                prop_train_labels=0.5)

@@ -8,8 +8,9 @@ from torch.utils.data import Dataset
 from data.data_utils import subsample_instances
 from utils.config import aircraft_root
 
+
 def make_dataset(dir, image_ids, targets):
-    assert(len(image_ids) == len(targets))
+    assert (len(image_ids) == len(targets))
     images = []
     dir = os.path.expanduser(dir)
     for i in range(len(image_ids)):
@@ -20,7 +21,6 @@ def make_dataset(dir, image_ids, targets):
 
 
 def find_classes(classes_file):
-
     # read classes file, separating out image IDs and class names
     image_ids = []
     targets = []
@@ -40,7 +40,6 @@ def find_classes(classes_file):
 
 
 class FGVCAircraft(Dataset):
-
     """`FGVC-Aircraft <http://www.robots.ox.ac.uk/~vgg/data/fgvc-aircraft>`_ Dataset.
 
     Args:
@@ -126,7 +125,7 @@ class FGVCAircraft(Dataset):
 
     def _check_exists(self):
         return os.path.exists(os.path.join(self.root, 'data', 'images')) and \
-            os.path.exists(self.classes_file)
+               os.path.exists(self.classes_file)
 
     def download(self):
         """Download the FGVC-Aircraft data if it doesn't exist already."""
@@ -166,7 +165,6 @@ class FGVCAircraft(Dataset):
 
 
 def subsample_dataset(dataset, idxs):
-
     mask = np.zeros(len(dataset)).astype('bool')
     mask[idxs] = True
 
@@ -177,7 +175,6 @@ def subsample_dataset(dataset, idxs):
 
 
 def subsample_classes(dataset, include_classes=range(60)):
-
     cls_idxs = [i for i, (p, t) in enumerate(dataset.samples) if t in include_classes]
 
     # TODO: Don't transform targets for now
@@ -193,7 +190,6 @@ def subsample_classes(dataset, include_classes=range(60)):
 
 
 def get_train_val_indices(train_dataset, val_split=0.2):
-
     all_targets = [t for i, (p, t) in enumerate(train_dataset.samples)]
     train_classes = np.unique(all_targets)
 
@@ -213,8 +209,7 @@ def get_train_val_indices(train_dataset, val_split=0.2):
 
 
 def get_aircraft_datasets(train_transform, test_transform, train_classes=range(50), prop_train_labels=0.8,
-                    split_train_val=False, seed=0):
-
+                          split_train_val=False, seed=0):
     np.random.seed(seed)
 
     # Init entire training set
@@ -250,6 +245,7 @@ def get_aircraft_datasets(train_transform, test_transform, train_classes=range(5
     }
 
     return all_datasets
+
 
 if __name__ == '__main__':
 

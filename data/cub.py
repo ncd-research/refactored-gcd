@@ -26,7 +26,6 @@ class CustomCub2011(Dataset):
         self.loader = loader
         self.train = train
 
-
         if download:
             self._download()
 
@@ -96,7 +95,6 @@ class CustomCub2011(Dataset):
 
 
 def subsample_dataset(dataset, idxs):
-
     mask = np.zeros(len(dataset)).astype('bool')
     mask[idxs] = True
 
@@ -107,8 +105,7 @@ def subsample_dataset(dataset, idxs):
 
 
 def subsample_classes(dataset, include_classes=range(160)):
-
-    include_classes_cub = np.array(include_classes) + 1     # CUB classes are indexed 1 --> 200 instead of 0 --> 199
+    include_classes_cub = np.array(include_classes) + 1  # CUB classes are indexed 1 --> 200 instead of 0 --> 199
     cls_idxs = [x for x, (_, r) in enumerate(dataset.data.iterrows()) if int(r['target']) in include_classes_cub]
 
     # TODO: For now have no target transform
@@ -124,14 +121,12 @@ def subsample_classes(dataset, include_classes=range(160)):
 
 
 def get_train_val_indices(train_dataset, val_split=0.2):
-
     train_classes = np.unique(train_dataset.data['target'])
 
     # Get train/test indices
     train_idxs = []
     val_idxs = []
     for cls in train_classes:
-
         cls_idxs = np.where(train_dataset.data['target'] == cls)[0]
 
         v_ = np.random.choice(cls_idxs, replace=False, size=((int(val_split * len(cls_idxs))),))
@@ -144,8 +139,7 @@ def get_train_val_indices(train_dataset, val_split=0.2):
 
 
 def get_cub_datasets(train_transform, test_transform, train_classes=range(160), prop_train_labels=0.8,
-                    split_train_val=False, seed=0):
-
+                     split_train_val=False, seed=0):
     np.random.seed(seed)
 
     # Init entire training set
@@ -181,6 +175,7 @@ def get_cub_datasets(train_transform, test_transform, train_classes=range(160), 
     }
 
     return all_datasets
+
 
 if __name__ == '__main__':
 

@@ -6,6 +6,7 @@ from sklearn.utils._joblib import Parallel, delayed, effective_n_jobs
 from sklearn.utils import check_random_state
 import torch
 
+
 def pairwise_distance(data1, data2, batch_size=None):
     r'''
     using broadcast mechanism to calculate pairwise ecludian distance of data
@@ -13,29 +14,29 @@ def pairwise_distance(data1, data2, batch_size=None):
     we first expand the N*M matrix into N*1*M matrix A and 1*N*M matrix B
     then a simple elementwise operation of A and B will handle the pairwise operation of points represented by data
     '''
-    #N*1*M
+    # N*1*M
     A = data1.unsqueeze(dim=1)
 
-    #1*N*M
+    # 1*N*M
     B = data2.unsqueeze(dim=0)
 
     if batch_size == None:
-        dis = (A-B)**2
-        #return N*N matrix for pairwise distance
+        dis = (A - B) ** 2
+        # return N*N matrix for pairwise distance
         dis = dis.sum(dim=-1)
         #  torch.cuda.empty_cache()
     else:
         i = 0
         dis = torch.zeros(data1.shape[0], data2.shape[0])
         while i < data1.shape[0]:
-            if(i+batch_size < data1.shape[0]):
-                dis_batch = (A[i:i+batch_size]-B)**2
+            if (i + batch_size < data1.shape[0]):
+                dis_batch = (A[i:i + batch_size] - B) ** 2
                 dis_batch = dis_batch.sum(dim=-1)
-                dis[i:i+batch_size] = dis_batch
-                i = i+batch_size
+                dis[i:i + batch_size] = dis_batch
+                i = i + batch_size
                 #  torch.cuda.empty_cache()
-            elif(i+batch_size >= data1.shape[0]):
-                dis_final = (A[i:] - B)**2
+            elif (i + batch_size >= data1.shape[0]):
+                dis_final = (A[i:] - B) ** 2
                 dis_final = dis_final.sum(dim=-1)
                 dis[i:] = dis_final
                 #  torch.cuda.empty_cache()
@@ -78,7 +79,6 @@ class K_Means:
 
         return remaining_l_feats, remaining_l_targets, val_l_feats, val_l_targets
 
-
     def kpp(self, X, pre_centers=None, k=10, random_state=None):
         random_state = check_random_state(random_state)
 
@@ -97,7 +97,7 @@ class K_Means:
             dist = pairwise_distance(X, C, self.pairwise_batch_size)
             dist = dist.view(-1, C.shape[0])
             d2, _ = torch.min(dist, dim=1)
-            prob = d2/d2.sum()
+            prob = d2 / d2.sum()
             cum_prob = torch.cumsum(prob, dim=0)
             r = random_state.rand()
 
@@ -109,12 +109,11 @@ class K_Means:
 
         return C
 
-
     def fit_once(self, X, random_state):
 
         centers = torch.zeros(self.k, X.shape[1]).type_as(X)
         labels = -torch.ones(len(X))
-        #initialize the centers, the first 'k' elements in the dataset will be our initial centers
+        # initialize the centers, the first 'k' elements in the dataset will be our initial centers
 
         if self.init == 'k-means++':
             centers = self.kpp(X, k=self.k, random_state=random_state)
@@ -130,7 +129,7 @@ class K_Means:
             for i in range(self.k):
                 centers[i] = X[i]
 
-        #begin iterations
+        # begin iterations
 
         best_labels, best_inertia, best_centers = None, None, None
         for i in range(self.max_iterations):
@@ -152,11 +151,10 @@ class K_Means:
 
             center_shift = torch.sum(torch.sqrt(torch.sum((centers - centers_old) ** 2, dim=1)))
             if center_shift ** 2 < self.tolerance:
-                #break out of the main loop if the results are optimal, ie. the centers don't change their positions much(more than our tolerance)
+                # break out of the main loop if the results are optimal, ie. the centers don't change their positions much(more than our tolerance)
                 break
 
         return best_labels, best_inertia, best_centers, i + 1
-
 
     def fit_mix_once(self, u_feats, l_feats, l_targets, random_state):
 
@@ -176,11 +174,11 @@ class K_Means:
         l_classes = l_classes.cpu().long().numpy()
         l_targets = l_targets.cpu().long().numpy()
         l_num = len(l_targets)
-        cid2ncid = {cid:ncid for ncid, cid in enumerate(l_classes)}  # Create the mapping table for New cid (ncid)
+        cid2ncid = {cid: ncid for ncid, cid in enumerate(l_classes)}  # Create the mapping table for New cid (ncid)
         for i in range(l_num):
             labels[i] = cid2ncid[l_targets[i]]
 
-        #initialize the centers, the first 'k' elements in the dataset will be our initial centers
+        # initialize the centers, the first 'k' elements in the dataset will be our initial centers
         centers = self.kpp(u_feats, l_centers, k=self.k, random_state=random_state)
 
         # Begin iterations
@@ -191,13 +189,12 @@ class K_Means:
             dist = pairwise_distance(u_feats, centers, self.pairwise_batch_size)
             u_mindist, u_labels = torch.min(dist, dim=1)
             u_inertia = u_mindist.sum()
-            l_mindist = torch.sum((l_feats - centers[labels[:l_num]])**2, dim=1)
+            l_mindist = torch.sum((l_feats - centers[labels[:l_num]]) ** 2, dim=1)
             l_inertia = l_mindist.sum()
             inertia = u_inertia + l_inertia
             labels[l_num:] = u_labels
 
             for idx in range(self.k):
-
                 selected = torch.nonzero(labels == idx).squeeze()
                 selected = torch.index_select(cat_feats, 0, selected)
                 centers[idx] = selected.mean(dim=0)
@@ -210,11 +207,10 @@ class K_Means:
             center_shift = torch.sum(torch.sqrt(torch.sum((centers - centers_old) ** 2, dim=1)))
 
             if center_shift ** 2 < self.tolerance:
-                #break out of the main loop if the results are optimal, ie. the centers don't change their positions much(more than our tolerance)
+                # break out of the main loop if the results are optimal, ie. the centers don't change their positions much(more than our tolerance)
                 break
 
         return best_labels, best_inertia, best_centers, i + 1
-
 
     def fit(self, X):
         random_state = check_random_state(self.random_state)
@@ -239,7 +235,6 @@ class K_Means:
             self.inertia_ = inertia[best]
             self.cluster_centers_ = centers[best]
             self.n_iter_ = n_iters[best]
-
 
     def fit_mix(self, u_feats, l_feats, l_targets):
 
@@ -276,7 +271,6 @@ class K_Means:
 
 
 def main():
-
     import matplotlib.pyplot as plt
     from matplotlib import style
     import pandas as pd
@@ -295,13 +289,12 @@ def main():
     device = torch.device("cuda" if cuda else "cpu")
     #  X = torch.from_numpy(X).float().to(device)
 
-
     y = np.array(y)
-    l_targets = y[y>1]
-    l_feats = X[y>1]
-    u_feats = X[y<2]
+    l_targets = y[y > 1]
+    l_feats = X[y > 1]
+    u_feats = X[y < 2]
     cat_feats = np.concatenate((l_feats, u_feats))
-    y = np.concatenate((y[y>1], y[y<2]))
+    y = np.concatenate((y[y > 1], y[y < 2]))
     cat_feats = torch.from_numpy(cat_feats).to(device)
     u_feats = torch.from_numpy(u_feats).to(device)
     l_feats = torch.from_numpy(l_feats).to(device)
@@ -319,15 +312,16 @@ def main():
     print('nmi', nmi_score(pred, y))
 
     # Plotting starts here
-    colors = 10*["g", "c", "b", "k", "r", "m"]
+    colors = 10 * ["g", "c", "b", "k", "r", "m"]
 
     for i in range(len(X)):
         x = X[i]
-        plt.scatter(x[0], x[1], color = colors[pred[i]],s = 10)
+        plt.scatter(x[0], x[1], color=colors[pred[i]], s=10)
 
     for i in range(4):
-        plt.scatter(centers[i][0], centers[i][1], s = 130, marker = "*", color='r')
+        plt.scatter(centers[i][0], centers[i][1], s=130, marker="*", color='r')
     plt.show()
+
 
 if __name__ == "__main__":
     main()

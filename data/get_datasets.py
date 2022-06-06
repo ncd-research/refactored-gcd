@@ -42,7 +42,6 @@ get_dataset_funcs = {
 
 
 def get_datasets(dataset_name, train_transform, test_transform, args):
-
     """
     :return: train_dataset: MergedDataset which concatenates labelled and unlabelled
              test_dataset,
@@ -57,9 +56,9 @@ def get_datasets(dataset_name, train_transform, test_transform, args):
     # Get datasets
     get_dataset_f = get_dataset_funcs[dataset_name]
     datasets = get_dataset_f(train_transform=train_transform, test_transform=test_transform,
-                            train_classes=args.train_classes,
-                            prop_train_labels=args.prop_train_labels,
-                            split_train_val=False)
+                             train_classes=args.train_classes,
+                             prop_train_labels=args.prop_train_labels,
+                             split_train_val=False)
 
     # Set target transforms:
     target_transform_dict = {}
@@ -83,7 +82,6 @@ def get_datasets(dataset_name, train_transform, test_transform, args):
 
 
 def get_class_splits(args):
-
     # For FGVC datasets, optionally return bespoke splits
     if args.dataset_name in ('scars', 'cub', 'aircraft'):
         if hasattr(args, 'use_ssb_splits'):

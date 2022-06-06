@@ -9,13 +9,11 @@ from utils.config import cifar_10_root, cifar_100_root
 class CustomCIFAR10(CIFAR10):
 
     def __init__(self, *args, **kwargs):
-
         super(CustomCIFAR10, self).__init__(*args, **kwargs)
 
         self.uq_idxs = np.array(range(len(self)))
 
     def __getitem__(self, item):
-
         img, label = super().__getitem__(item)
         uq_idx = self.uq_idxs[item]
 
@@ -43,7 +41,6 @@ class CustomCIFAR100(CIFAR100):
 
 
 def subsample_dataset(dataset, idxs):
-
     # Allow for setting in which all empty set of indices is passed
 
     if len(idxs) > 0:
@@ -60,7 +57,6 @@ def subsample_dataset(dataset, idxs):
 
 
 def subsample_classes(dataset, include_classes=(0, 1, 8, 9)):
-
     cls_idxs = [x for x, t in enumerate(dataset.targets) if t in include_classes]
 
     target_xform_dict = {}
@@ -75,14 +71,12 @@ def subsample_classes(dataset, include_classes=(0, 1, 8, 9)):
 
 
 def get_train_val_indices(train_dataset, val_split=0.2):
-
     train_classes = np.unique(train_dataset.targets)
 
     # Get train/test indices
     train_idxs = []
     val_idxs = []
     for cls in train_classes:
-
         cls_idxs = np.where(train_dataset.targets == cls)[0]
 
         v_ = np.random.choice(cls_idxs, replace=False, size=((int(val_split * len(cls_idxs))),))
@@ -95,8 +89,7 @@ def get_train_val_indices(train_dataset, val_split=0.2):
 
 
 def get_cifar_10_datasets(train_transform, test_transform, train_classes=(0, 1, 8, 9),
-                       prop_train_labels=0.8, split_train_val=False, seed=0):
-
+                          prop_train_labels=0.8, split_train_val=False, seed=0):
     np.random.seed(seed)
 
     # Init entire training set
@@ -135,8 +128,7 @@ def get_cifar_10_datasets(train_transform, test_transform, train_classes=(0, 1, 
 
 
 def get_cifar_100_datasets(train_transform, test_transform, train_classes=range(80),
-                       prop_train_labels=0.8, split_train_val=False, seed=0):
-
+                           prop_train_labels=0.8, split_train_val=False, seed=0):
     np.random.seed(seed)
 
     # Init entire training set
@@ -177,7 +169,7 @@ def get_cifar_100_datasets(train_transform, test_transform, train_classes=range(
 if __name__ == '__main__':
 
     x = get_cifar_100_datasets(None, None, split_train_val=False,
-                         train_classes=range(80), prop_train_labels=0.5)
+                               train_classes=range(80), prop_train_labels=0.5)
 
     print('Printing lens...')
     for k, v in x.items():

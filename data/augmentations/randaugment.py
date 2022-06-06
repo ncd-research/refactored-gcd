@@ -204,6 +204,7 @@ def augment_list():  # 16 oeprations and their ranges
 
     return l
 
+
 def augment_list_svhn():  # 16 oeprations and their ranges
 
     # https://github.com/tensorflow/tpu/blob/8462d083dd89489a79e3200bcc8d4063bf362186/models/official/efficientnet/autoaugment.py#L505
@@ -251,6 +252,7 @@ class CutoutDefault(object):
     """
     Reference : https://github.com/quark0/darts/blob/master/cnn/utils.py
     """
+
     def __init__(self, length):
         self.length = length
 
@@ -274,8 +276,8 @@ class CutoutDefault(object):
 
 class RandAugment:
     def __init__(self, n, m, args=None):
-        self.n = n      # [1, 2]
-        self.m = m      # [0...30]
+        self.n = n  # [1, 2]
+        self.m = m  # [0...30]
 
         if args is None:
             self.augment_list = augment_list()

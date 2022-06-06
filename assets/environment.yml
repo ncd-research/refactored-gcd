@@ -1,4 +1,4 @@
-name: open_world_prototype
+name: GCD
 channels:
   - conda-forge
   - pytorch
@@ -258,5 +258,4 @@ dependencies:
     - websocket-client==1.2.1
     - widgetsnbextension==3.5.1
     - zipp==3.1.0
-prefix: /users/sagar/miniconda3/envs/open_world_prototype
-
+prefix: /home/yuho/.conda/envs/GCD

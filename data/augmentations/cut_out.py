@@ -5,6 +5,7 @@ https://github.com/hysts/pytorch_cutout
 import torch
 import numpy as np
 
+
 def cutout(mask_size, p, cutout_inside, mask_color=(0, 0, 0)):
     mask_size_half = mask_size // 2
     offset = 1 if mask_size % 2 == 0 else 0
@@ -39,6 +40,7 @@ def cutout(mask_size, p, cutout_inside, mask_color=(0, 0, 0)):
 
     return _cutout
 
+
 def to_tensor():
     def _to_tensor(image):
         if len(image.shape) == 3:
@@ -49,8 +51,8 @@ def to_tensor():
 
     return _to_tensor
 
-def normalize(mean, std):
 
+def normalize(mean, std):
     mean = np.array(mean)
     std = np.array(std)
 

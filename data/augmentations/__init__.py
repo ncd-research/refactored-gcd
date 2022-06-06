@@ -2,8 +2,8 @@ from torchvision import transforms
 from data.augmentations.cut_out import *
 from data.augmentations.randaugment import RandAugment
 
-def get_transform(transform_type='default', image_size=32, args=None):
 
+def get_transform(transform_type='default', image_size=32, args=None):
     if transform_type == 'imagenet':
 
         mean = (0.485, 0.456, 0.406)

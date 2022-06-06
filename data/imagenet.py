@@ -11,13 +11,11 @@ from utils.config import imagenet_root
 class ImageNetBase(torchvision.datasets.ImageFolder):
 
     def __init__(self, root, transform):
-
         super(ImageNetBase, self).__init__(root, transform)
 
         self.uq_idxs = np.array(range(len(self)))
 
     def __getitem__(self, item):
-
         img, label = super().__getitem__(item)
         uq_idx = self.uq_idxs[item]
 
@@ -25,7 +23,6 @@ class ImageNetBase(torchvision.datasets.ImageFolder):
 
 
 def subsample_dataset(dataset, idxs):
-
     imgs_ = []
     for i in idxs:
         imgs_.append(dataset.imgs[i])
@@ -46,7 +43,6 @@ def subsample_dataset(dataset, idxs):
 
 
 def subsample_classes(dataset, include_classes=list(range(1000))):
-
     cls_idxs = [x for x, t in enumerate(dataset.targets) if t in include_classes]
 
     target_xform_dict = {}
@@ -60,14 +56,12 @@ def subsample_classes(dataset, include_classes=list(range(1000))):
 
 
 def get_train_val_indices(train_dataset, val_split=0.2):
-
     train_classes = list(set(train_dataset.targets))
 
     # Get train/test indices
     train_idxs = []
     val_idxs = []
     for cls in train_classes:
-
         cls_idxs = np.where(np.array(train_dataset.targets) == cls)[0]
 
         v_ = np.random.choice(cls_idxs, replace=False, size=((int(val_split * len(cls_idxs))),))
@@ -98,8 +92,7 @@ def get_equal_len_datasets(dataset1, dataset2):
 
 
 def get_imagenet_100_datasets(train_transform, test_transform, train_classes=range(80),
-                           prop_train_labels=0.8, split_train_val=False, seed=0):
-
+                              prop_train_labels=0.8, split_train_val=False, seed=0):
     np.random.seed(seed)
 
     # Subsample imagenet dataset initially to include 100 classes
@@ -160,7 +153,7 @@ def get_imagenet_100_datasets(train_transform, test_transform, train_classes=ran
 if __name__ == '__main__':
 
     x = get_imagenet_100_datasets(None, None, split_train_val=False,
-                               train_classes=range(50), prop_train_labels=0.5)
+                                  train_classes=range(50), prop_train_labels=0.5)
 
     print('Printing lens...')
     for k, v in x.items():

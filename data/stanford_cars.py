@@ -12,10 +12,12 @@ from data.data_utils import subsample_instances
 car_root = "/work/sagar/datasets/stanford_car/cars_{}/"
 meta_default_path = "/work/sagar/datasets/stanford_car/devkit/cars_{}.mat"
 
+
 class CarsDataset(Dataset):
     """
         Cars Dataset
     """
+
     def __init__(self, train=True, limit=0, data_dir=car_root, transform=None, metas=meta_default_path):
 
         data_dir = data_dir.format('train') if train else data_dir.format('test')
@@ -66,7 +68,6 @@ class CarsDataset(Dataset):
 
 
 def subsample_dataset(dataset, idxs):
-
     dataset.data = np.array(dataset.data)[idxs].tolist()
     dataset.target = np.array(dataset.target)[idxs].tolist()
     dataset.uq_idxs = dataset.uq_idxs[idxs]
@@ -75,8 +76,7 @@ def subsample_dataset(dataset, idxs):
 
 
 def subsample_classes(dataset, include_classes=range(160)):
-
-    include_classes_cars = np.array(include_classes) + 1     # SCars classes are indexed 1 --> 196 instead of 0 --> 195
+    include_classes_cars = np.array(include_classes) + 1  # SCars classes are indexed 1 --> 196 instead of 0 --> 195
     cls_idxs = [x for x, t in enumerate(dataset.target) if t in include_classes_cars]
 
     target_xform_dict = {}
@@ -89,15 +89,14 @@ def subsample_classes(dataset, include_classes=range(160)):
 
     return dataset
 
-def get_train_val_indices(train_dataset, val_split=0.2):
 
+def get_train_val_indices(train_dataset, val_split=0.2):
     train_classes = np.unique(train_dataset.target)
 
     # Get train/test indices
     train_idxs = []
     val_idxs = []
     for cls in train_classes:
-
         cls_idxs = np.where(train_dataset.target == cls)[0]
 
         v_ = np.random.choice(cls_idxs, replace=False, size=((int(val_split * len(cls_idxs))),))
@@ -110,8 +109,7 @@ def get_train_val_indices(train_dataset, val_split=0.2):
 
 
 def get_scars_datasets(train_transform, test_transform, train_classes=range(160), prop_train_labels=0.8,
-                    split_train_val=False, seed=0):
-
+                       split_train_val=False, seed=0):
     np.random.seed(seed)
 
     # Init entire training set
@@ -147,6 +145,7 @@ def get_scars_datasets(train_transform, test_transform, train_classes=range(160)
     }
 
     return all_datasets
+
 
 if __name__ == '__main__':
 

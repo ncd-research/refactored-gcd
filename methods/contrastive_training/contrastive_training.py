@@ -22,6 +22,7 @@ from utils.config import exp_root, dino_pretrain_path
 
 # TODO: Debug
 import warnings
+
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
@@ -29,6 +30,7 @@ class SupConLoss(torch.nn.Module):
     """Supervised Contrastive Learning: https://arxiv.org/pdf/2004.11362.pdf.
     It also supports the unsupervised contrastive loss in SimCLR
     From: https://github.com/HobbitLong/SupContrast"""
+
     def __init__(self, temperature=0.07, contrast_mode='all',
                  base_temperature=0.07):
         super(SupConLoss, self).__init__()
@@ -129,7 +131,6 @@ class ContrastiveLearningViewGenerator(object):
 
 
 def info_nce_logits(features, args):
-
     b_ = 0.5 * int(features.size(0))
 
     labels = torch.cat([torch.arange(b_) for i in range(args.n_views)], dim=0)
@@ -163,15 +164,14 @@ def info_nce_logits(features, args):
 
 
 def train(projection_head, model, train_loader, test_loader, unlabelled_train_loader, args):
-
     optimizer = SGD(list(projection_head.parameters()) + list(model.parameters()), lr=args.lr, momentum=args.momentum,
                     weight_decay=args.weight_decay)
 
     exp_lr_scheduler = lr_scheduler.CosineAnnealingLR(
-            optimizer,
-            T_max=args.epochs,
-            eta_min=args.lr * 1e-3,
-        )
+        optimizer,
+        T_max=args.epochs,
+        eta_min=args.lr * 1e-3,
+    )
 
     sup_con_crit = SupConLoss()
     best_test_acc_lab = 0
@@ -233,10 +233,8 @@ def train(projection_head, model, train_loader, test_loader, unlabelled_train_lo
             loss.backward()
             optimizer.step()
 
-
         print('Train Epoch: {} Avg Loss: {:.4f} | Seen Class Acc: {:.4f} '.format(epoch, loss_record.avg,
                                                                                   train_acc_record.avg))
-
 
         with torch.no_grad():
 
@@ -260,7 +258,7 @@ def train(projection_head, model, train_loader, test_loader, unlabelled_train_lo
         print('Train Accuracies: All {:.4f} | Old {:.4f} | New {:.4f}'.format(all_acc, old_acc,
                                                                               new_acc))
         print('Test Accuracies: All {:.4f} | Old {:.4f} | New {:.4f}'.format(all_acc_test, old_acc_test,
-                                                                                new_acc_test))
+                                                                             new_acc_test))
 
         # Step schedule
         exp_lr_scheduler.step()
@@ -272,10 +270,9 @@ def train(projection_head, model, train_loader, test_loader, unlabelled_train_lo
         print("projection head saved to {}.".format(args.model_path[:-3] + '_proj_head.pt'))
 
         if old_acc_test > best_test_acc_lab:
-
             print(f'Best ACC on old Classes on disjoint test set: {old_acc_test:.4f}...')
             print('Best Train Accuracies: All {:.4f} | Old {:.4f} | New {:.4f}'.format(all_acc, old_acc,
-                                                                                  new_acc))
+                                                                                       new_acc))
 
             torch.save(model.state_dict(), args.model_path[:-3] + f'_best.pt')
             print("model saved to {}.".format(args.model_path[:-3] + f'_best.pt'))
@@ -289,7 +286,6 @@ def train(projection_head, model, train_loader, test_loader, unlabelled_train_lo
 def test_kmeans(model, test_loader,
                 epoch, save_name,
                 args):
-
     model.eval()
 
     all_feats = []
@@ -299,7 +295,6 @@ def test_kmeans(model, test_loader,
     print('Collating features...')
     # First extract all features
     for batch_idx, (images, label, _) in enumerate(tqdm(test_loader)):
-
         images = images.cuda()
 
         # Pass features through base model and then additional learnable transform (linear layer)
@@ -334,8 +329,8 @@ def test_kmeans(model, test_loader,
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-            description='cluster',
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        description='cluster',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--batch_size', default=128, type=int)
     parser.add_argument('--num_workers', default=16, type=int)
     parser.add_argument('--eval_funcs', nargs='+', help='Which eval functions to use', default=['v1', 'v2'])
@@ -433,7 +428,6 @@ if __name__ == "__main__":
                                                                                          test_transform,
                                                                                          args)
 
-
     # --------------------
     # SAMPLER
     # Sampler which balances labelled and unlabelled examples in each batch
@@ -458,7 +452,7 @@ if __name__ == "__main__":
     # PROJECTION HEAD
     # ----------------------
     projection_head = vits.__dict__['DINOHead'](in_dim=args.feat_dim,
-                               out_dim=args.mlp_out_dim, nlayers=args.num_mlp_layers)
+                                                out_dim=args.mlp_out_dim, nlayers=args.num_mlp_layers)
     projection_head.to(device)
 
     # ----------------------

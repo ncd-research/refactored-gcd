@@ -23,7 +23,6 @@ save_root_dir = '/work/sagar/open_set_recognition/sweep_summary_files/ensemble_p
 
 
 def get_file(path):
-
     file = []
     with open(path, 'rt') as myfile:
         for myline in myfile:  # For each line, read to a string,
@@ -33,11 +32,9 @@ def get_file(path):
 
 
 def parse_out_file(path, rx_dict, root_dir=save_root_dir, save_name='test.pkl', save=True, verbose=True):
-
     file = get_file(path=path)
     for i, line in enumerate(file):
         if line.find('Namespace') != -1:
-
             model = {}
             s = rx_dict['model_dir'].search(line).group(1)
             exp_id = s[s.find("("):s.find(")") + 1]
@@ -76,7 +73,6 @@ def parse_out_file(path, rx_dict, root_dir=save_root_dir, save_name='test.pkl', 
 
             break
 
-
     data = pd.DataFrame([model])
 
     if verbose:
@@ -93,10 +89,8 @@ def parse_out_file(path, rx_dict, root_dir=save_root_dir, save_name='test.pkl', 
 
 
 def parse_multiple_files(all_paths, rx_dict, root_dir=save_root_dir, save_name='test.pkl', verbose=True, save=False):
-
     all_data = []
     for path in all_paths:
-
         data = parse_out_file(path, rx_dict, save=False, verbose=False)
         all_data.append(data)
 
