@@ -25,7 +25,6 @@ def test_kmeans_semi_sup(merge_test_loader, args, K=None):
     """
     In this case, the test loader needs to have the labelled and unlabelled subsets of the training data
     """
-
     if K is None:
         K = args.num_labeled_classes + args.num_unlabeled_classes
 
@@ -38,9 +37,7 @@ def test_kmeans_semi_sup(merge_test_loader, args, K=None):
     # First extract all features
     for batch_idx, (feats, label, _, mask_lab_) in enumerate(tqdm(merge_test_loader)):
         feats = feats.to(device)
-
         feats = torch.nn.functional.normalize(feats, dim=-1)
-
         all_feats.append(feats.cpu().numpy())
         targets = np.append(targets, label.cpu().numpy())
         mask_cls = np.append(mask_cls, np.array([True if x.item() in range(len(args.train_classes))
@@ -65,8 +62,8 @@ def test_kmeans_semi_sup(merge_test_loader, args, K=None):
                            n_init=args.k_means_init, random_state=None, n_jobs=None, pairwise_batch_size=1024,
                            mode=None)
 
-    l_feats, u_feats, l_targets, u_targets = (torch.from_numpy(x).to(device) for
-                                              x in (l_feats, u_feats, l_targets, u_targets))
+    l_feats, u_feats, l_targets, u_targets = (torch.from_numpy(x).to(device) for x
+                                              in (l_feats, u_feats, l_targets, u_targets))
 
     kmeans.fit_mix(u_feats, l_feats, l_targets)
     all_preds = kmeans.labels_.cpu().numpy()
@@ -75,7 +72,7 @@ def test_kmeans_semi_sup(merge_test_loader, args, K=None):
     # -----------------------
     # EVALUATE
     # -----------------------
-    # Get preds corresponding to unlabelled set
+    # Get preds corresponding to "unlabelled" set
     preds = all_preds[~mask_lab]
 
     # Get portion of mask_cls which corresponds to the unlabelled set
@@ -94,9 +91,7 @@ def test_kmeans_semi_sup(merge_test_loader, args, K=None):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(
-        description='cluster',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(description='cluster', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--batch_size', default=128, type=int)
     parser.add_argument('--num_workers', default=8, type=int)
     parser.add_argument('--K', default=None, type=int, help='Set manually to run with custom K')
@@ -126,7 +121,7 @@ if __name__ == "__main__":
     args.num_labeled_classes = len(args.train_classes)
     args.num_unlabeled_classes = len(args.unlabeled_classes)
 
-    device = torch.device('cuda:0')
+    device = torch.device('cuda')
     args.device = device
     print(args)
 
@@ -148,9 +143,7 @@ if __name__ == "__main__":
     # --------------------
     print('Building datasets...')
     train_transform, test_transform = None, None
-    train_dataset, test_dataset, unlabelled_train_examples_test, datasets = get_datasets(args.dataset_name,
-                                                                                         train_transform,
-                                                                                         test_transform, args)
+    train_dataset, _, _, _ = get_datasets(args.dataset_name, train_transform, test_transform, args)
 
     # Set target transforms:
     target_transform_dict = {}
@@ -159,18 +152,9 @@ if __name__ == "__main__":
     target_transform = lambda x: target_transform_dict[x]
 
     # Convert to feature vector dataset
-    test_dataset = FeatureVectorDataset(base_dataset=test_dataset, feature_root=os.path.join(args.save_dir, 'test'))
-    unlabelled_train_examples_test = FeatureVectorDataset(base_dataset=unlabelled_train_examples_test,
-                                                          feature_root=os.path.join(args.save_dir, 'train'))
     train_dataset = FeatureVectorDataset(base_dataset=train_dataset, feature_root=os.path.join(args.save_dir, 'train'))
     train_dataset.target_transform = target_transform
-
-    unlabelled_train_loader = DataLoader(unlabelled_train_examples_test, num_workers=args.num_workers,
-                                         batch_size=args.batch_size, shuffle=False)
-    test_loader = DataLoader(test_dataset, num_workers=args.num_workers,
-                             batch_size=args.batch_size, shuffle=False)
-    train_loader = DataLoader(train_dataset, num_workers=args.num_workers,
-                              batch_size=args.batch_size, shuffle=False)
+    train_loader = DataLoader(train_dataset, num_workers=args.num_workers, batch_size=args.batch_size, shuffle=False)
 
     print('Performing SS-K-Means on all in the training data...')
     all_acc, old_acc, new_acc, kmeans = test_kmeans_semi_sup(train_loader, args, K=args.K)

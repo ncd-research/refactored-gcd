@@ -64,14 +64,11 @@ def extract_features_timm(model, loader, save_dir):
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(
-        description='cluster',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser = argparse.ArgumentParser(description='cluster', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('--batch_size', default=128, type=int)
     parser.add_argument('--num_workers', default=8, type=int)
     parser.add_argument('--root_dir', type=str, default=feature_extract_dir)
-    parser.add_argument('--warmup_model_dir', type=str,
-                        default=None)
+    parser.add_argument('--warmup_model_dir', type=str, default=None)
     parser.add_argument('--use_best_model', type=str2bool, default=True)
     parser.add_argument('--model_name', type=str, default='vit_dino', help='Format is {model_name}_{pretrain}')
     parser.add_argument('--dataset', type=str, default='aircraft')
@@ -80,7 +77,7 @@ if __name__ == "__main__":
     # INIT
     # ----------------------
     args = parser.parse_args()
-    device = torch.device('cuda:0')
+    device = torch.device('cuda')
 
     args.save_dir = os.path.join(args.root_dir, f'{args.model_name}_{args.dataset}')
     print(args)
@@ -108,7 +105,7 @@ if __name__ == "__main__":
         extract_features_func = extract_features_dino
         args.interpolation = 3
         args.crop_pct = 0.875
-        pretrain_path = '/work/sagar/pretrained_models/dino/dino_resnet50_pretrain.pth'
+        pretrain_path = 'Not implemented yet'   # '/work/sagar/pretrained_models/dino/dino_resnet50_pretrain.pth'
 
         model = torch.hub.load('facebookresearch/dino:main', 'dino_resnet50', pretrained=False)
 
@@ -164,24 +161,19 @@ if __name__ == "__main__":
 
         train_dataset = HerbariumDataset19(root=os.path.join(herbarium_dataroot, 'small-train'),
                                            transform=val_transform)
-
         test_dataset = HerbariumDataset19(root=os.path.join(herbarium_dataroot, 'small-validation'),
                                           transform=val_transform)
-
         targets = list(set(train_dataset.targets))
 
     elif args.dataset == 'imagenet_100':
 
         datasets = get_imagenet_100_datasets(train_transform=val_transform, test_transform=val_transform,
-                                             train_classes=range(50),
-                                             prop_train_labels=0.5)
-
+                                             train_classes=range(50), prop_train_labels=0.5)
         datasets['train_labelled'].target_transform = None
         datasets['train_unlabelled'].target_transform = None
 
         train_dataset = MergedDataset(labelled_dataset=deepcopy(datasets['train_labelled']),
                                       unlabelled_dataset=deepcopy(datasets['train_unlabelled']))
-
         test_dataset = datasets['test']
         targets = list(set(test_dataset.targets))
 

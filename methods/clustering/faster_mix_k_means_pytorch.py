@@ -1,7 +1,4 @@
 import numpy as np
-import copy
-import random
-from utils.cluster_utils import cluster_acc
 from sklearn.utils._joblib import Parallel, delayed, effective_n_jobs
 from sklearn.utils import check_random_state
 import torch
@@ -24,7 +21,7 @@ def pairwise_distance(data1, data2, batch_size=None):
         dis = (A - B) ** 2
         # return N*N matrix for pairwise distance
         dis = dis.sum(dim=-1)
-        #  torch.cuda.empty_cache()
+        # torch.cuda.empty_cache()
     else:
         i = 0
         dis = torch.zeros(data1.shape[0], data2.shape[0])
@@ -83,11 +80,8 @@ class K_Means:
         random_state = check_random_state(random_state)
 
         if pre_centers is not None:
-
             C = pre_centers
-
         else:
-
             C = X[random_state.randint(0, len(X))]
 
         C = C.view(-1, X.shape[1])
@@ -130,7 +124,6 @@ class K_Means:
                 centers[i] = X[i]
 
         # begin iterations
-
         best_labels, best_inertia, best_centers = None, None, None
         for i in range(self.max_iterations):
 
@@ -151,7 +144,8 @@ class K_Means:
 
             center_shift = torch.sum(torch.sqrt(torch.sum((centers - centers_old) ** 2, dim=1)))
             if center_shift ** 2 < self.tolerance:
-                # break out of the main loop if the results are optimal, ie. the centers don't change their positions much(more than our tolerance)
+                # break out of the main loop if the results are optimal,
+                # i.e. the centers don't change their positions much(more than our tolerance)
                 break
 
         return best_labels, best_inertia, best_centers, i + 1
@@ -207,7 +201,8 @@ class K_Means:
             center_shift = torch.sum(torch.sqrt(torch.sum((centers - centers_old) ** 2, dim=1)))
 
             if center_shift ** 2 < self.tolerance:
-                # break out of the main loop if the results are optimal, ie. the centers don't change their positions much(more than our tolerance)
+                # break out of the main loop if the results are optimal,
+                # i.e. the centers don't change their positions much(more than our tolerance)
                 break
 
         return best_labels, best_inertia, best_centers, i + 1
@@ -225,9 +220,10 @@ class K_Means:
                     self.inertia_ = inertia
                     self.n_iter_ = n_iters
         else:
-            # parallelisation of k-means runs
+            # parallelization of k-means runs
             seeds = random_state.randint(np.iinfo(np.int32).max, size=self.n_init)
             results = Parallel(n_jobs=self.n_jobs, verbose=0)(delayed(self.fit_once)(X, seed) for seed in seeds)
+
             # Get results with the lowest inertia
             labels, inertia, centers, n_iters = zip(*results)
             best = np.argmin(inertia)
@@ -255,13 +251,11 @@ class K_Means:
                     self.n_iter_ = n_iters
 
         else:
-
-            # parallelisation of k-means runs
+            # parallelization of k-means runs
             seeds = random_state.randint(np.iinfo(np.int32).max, size=self.n_init)
             results = Parallel(n_jobs=self.n_jobs, verbose=0)(delayed(fit_func)(u_feats, l_feats, l_targets, seed)
                                                               for seed in seeds)
             # Get results with the lowest inertia
-
             labels, inertia, centers, n_iters = zip(*results)
             best = np.argmin(inertia)
             self.labels_ = labels[best]
@@ -320,6 +314,7 @@ def main():
 
     for i in range(4):
         plt.scatter(centers[i][0], centers[i][1], s=130, marker="*", color='r')
+
     plt.show()
 
 

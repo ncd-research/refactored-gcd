@@ -410,6 +410,10 @@ if __name__ == "__main__":
 
         raise NotImplementedError
 
+    # Check the trainable parameters
+    # Q. Why last layer is frozen?
+    print([{name: param.requires_grad} for name, param in model.named_parameters()])
+
     # --------------------
     # CONTRASTIVE TRANSFORM
     # --------------------
