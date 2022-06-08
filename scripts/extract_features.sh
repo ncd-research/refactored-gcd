@@ -22,7 +22,7 @@ done
 
 # Checkpoints name
 echo
-echo -n "* Please type the name of checkpoints"
+echo -n "* Please type the name of checkpoints: "
 read -r name
 CKPT="${name}"    # Ex. (28.04.2022_|_27.516)
 

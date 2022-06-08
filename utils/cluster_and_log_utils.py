@@ -79,8 +79,7 @@ EVAL_FUNCS = {
 
 
 def log_accs_from_preds(y_true, y_pred, mask, eval_funcs: List[str], save_name: str, T: int = None,
-                        writer: SummaryWriter = None,
-                        print_output=False):
+                        writer: SummaryWriter = None, print_output=False):
     """
     Given a list of evaluation functions to use (e.g ['v1', 'v2']) evaluate and log ACC results
 
@@ -105,9 +104,7 @@ def log_accs_from_preds(y_true, y_pred, mask, eval_funcs: List[str], save_name: 
         log_name = f'{save_name}_{f_name}'
 
         if writer is not None:
-            writer.add_scalars(log_name,
-                               {'Old': old_acc, 'New': new_acc,
-                                'All': all_acc}, T)
+            writer.add_scalars(log_name, {'Old': old_acc, 'New': new_acc, 'All': all_acc}, T)
 
         if i == 0:
             to_return = (all_acc, old_acc, new_acc)
