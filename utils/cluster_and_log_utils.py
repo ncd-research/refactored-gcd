@@ -45,14 +45,18 @@ def split_cluster_acc_v2(y_true, y_pred, mask):
 
     assert y_pred.size == y_true.size
     D = max(y_pred.max(), y_true.max()) + 1
+
+    # Row: Prediction, Column: True label
     w = np.zeros((D, D), dtype=int)
     for i in range(y_pred.size):
         w[y_pred[i], y_true[i]] += 1
 
+    # Find the index combination with the highest prediction rate
     ind = linear_assignment(w.max() - w)
     ind = np.vstack(ind).T
-
     ind_map = {j: i for i, j in ind}
+
+    # Accuracy measure
     total_acc = sum([w[i, j] for i, j in ind]) * 1.0 / y_pred.size
 
     old_acc = 0
@@ -72,9 +76,77 @@ def split_cluster_acc_v2(y_true, y_pred, mask):
     return total_acc, old_acc, new_acc
 
 
+def split_cluster_acc_v3(y_true, y_pred, mask, is_plot=True, save_path='/data01/yuho_hdd/refactored_gcd/results'):
+    """
+    Calculate clustering accuracy. Require scikit-learn installed
+    First compute linear assignment on all data, then look at how good the accuracy is on subsets
+
+    # Arguments
+        mask: Which instances come from old classes (True) and which ones come from new classes (False)
+        y: true labels, numpy.array with shape `(n_samples,)`
+        y_pred: predicted labels, numpy.array with shape `(n_samples,)`
+
+    # Return
+        accuracy, in [0,1]
+    """
+    y_true = y_true.astype(int)
+
+    old_classes_gt = set(y_true[mask])
+    new_classes_gt = set(y_true[~mask])
+
+    assert y_pred.size == y_true.size
+    D = max(y_pred.max(), y_true.max()) + 1
+
+    # Row: Prediction, Column: True label
+    w = np.zeros((D, D), dtype=int)
+    for i in range(y_pred.size):
+        w[y_pred[i], y_true[i]] += 1
+
+    num_old_class = len(old_classes_gt)
+    num_novel_class = len(new_classes_gt)
+    w_copy = w.copy()
+    w_novel = w[num_old_class:, num_old_class:]
+
+    # Find the index combination with the highest prediction rate
+    novel_ind = linear_assignment(w_novel.max() - w_novel)
+    novel_ind = np.vstack(novel_ind).T
+    novel_ind_map = {j + num_old_class: i + num_old_class for i, j in novel_ind}
+
+    # Assign proper label
+    for k, v in novel_ind_map.items():
+        w[k] = w_copy[v]
+
+    # Confusion matrix
+    if is_plot:
+        import seaborn as sns
+        svm = sns.heatmap(w, fmt="d", cmap="Blues")
+        figure = svm.get_figure()
+        figure.savefig(save_path + '/v3_confusion_matrix.png')
+
+    # Accuracy measure
+    total_acc = sum([w[i, i] for i in range(num_old_class + num_novel_class)]) * 1.0 / y_pred.size
+
+    old_acc = 0
+    total_old_instances = 0
+    for i in old_classes_gt:
+        old_acc += w[i, i]
+        total_old_instances += sum(w[:, i])
+    old_acc /= total_old_instances
+
+    new_acc = 0
+    total_new_instances = 0
+    for i in new_classes_gt:
+        new_acc += w[i, i]
+        total_new_instances += sum(w[:, i])
+    new_acc /= total_new_instances
+
+    return total_acc, old_acc, new_acc
+
+
 EVAL_FUNCS = {
     'v1': split_cluster_acc_v1,
     'v2': split_cluster_acc_v2,
+    'v3': split_cluster_acc_v3,
 }
 
 
@@ -100,8 +172,8 @@ def log_accs_from_preds(y_true, y_pred, mask, eval_funcs: List[str], save_name: 
     for i, f_name in enumerate(eval_funcs):
 
         acc_f = EVAL_FUNCS[f_name]
-        all_acc, old_acc, new_acc = acc_f(y_true, y_pred, mask)
         log_name = f'{save_name}_{f_name}'
+        all_acc, old_acc, new_acc = acc_f(y_true, y_pred, mask)
 
         if writer is not None:
             writer.add_scalars(log_name, {'Old': old_acc, 'New': new_acc, 'All': all_acc}, T)

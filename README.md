@@ -49,7 +49,8 @@ bash scripts/k_means.sh
 
 ## Results
 
-- 결과가 논문과 너무 차이나기 때문에 코드 하나하나 자세히 살펴볼 필요가 있음
+- The results are so different from the original paper that we need to check the code again.
+- v1 accuracy calculates New and Old Acc separately. So, it is not a proper metric.
 
 | **v2 accuracies**             | **All** | **Old** | **New** |
 |-------------------------------|---------|---------|---------|
@@ -59,3 +60,10 @@ bash scripts/k_means.sh
 | CIFAR100 (paper)              | 70.8    | 77.6    | 57.0    |
 | CIFAR100 (original repo)      | 71.3    | 77.4    | 59.1    |
 | CIFAR100 (reproduce)          | 74.1    | 80.3    | 61.6    |
+
+- v3 is a new accuracy metric made by [@yuhodots](https://github.com/yuhodots).
+
+| **v3 accuracies**             | **All** | **Old** | **New** |
+|-------------------------------|---------|---------|---------|
+| Stanford Cars (reproduce)     | 38.2    | 69.8    | 23.0    |
+| CIFAR100 (reproduce)          | 70.4    | 83.2    | 44.8    |
