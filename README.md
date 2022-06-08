@@ -49,11 +49,13 @@ bash scripts/k_means.sh
 
 ## Results
 
-| **Dataset**                   | **All** | **Old** | **New** |
+- 결과가 논문과 너무 차이나기 때문에 코드 하나하나 자세히 살펴볼 필요가 있음
+
+| **v2 accuracies**             | **All** | **Old** | **New** |
 |-------------------------------|---------|---------|---------|
 | Stanford Cars (paper)         | 39.0    | 57.6    | 29.9    |
 | Stanford Cars (original repo) | 39.9    | 58.5    | 30.9    |
-| Stanford Cars (reproduce)     |         |         |         |
+| Stanford Cars (reproduce)     | 41.0    | 61.8    | 31.0    |
 | CIFAR100 (paper)              | 70.8    | 77.6    | 57.0    |
 | CIFAR100 (original repo)      | 71.3    | 77.4    | 59.1    |
-| CIFAR100 (reproduce)          |         |         |         |
+| CIFAR100 (reproduce)          | 74.1    | 80.3    | 61.6    |
